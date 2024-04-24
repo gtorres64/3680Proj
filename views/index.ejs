@@ -9,5 +9,9 @@
     <a href="/aah/login">Login</a>
     or register
     <a href="/aah/register">Register</a>
+    <h1>Hi <%= name %></h1>
+    <form action="/aah/logout?_method=DELETE" method="POST">
+        <button type="submit">Log out</button>
+    </form>
 </body>
 </html>
