@@ -6,6 +6,10 @@
     <title>Customer Dashboard</title>
 </head>
 <body>
+    <% console.log("Name:", name); %>
     <h1>Hello <%= name %>!</h1>
+    <form action="/logout?_method=DELETE" method="POST">
+        <button type="submit">Log out</button>
+    </form>
 </body>
 </html>

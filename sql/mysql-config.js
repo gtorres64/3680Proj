@@ -31,7 +31,6 @@ async function findUserByEmail(email) {
     const [rows] = await pool.query(`
     SELECT * FROM users WHERE email = ?`,
     [email]);
-    console.log(rows);
     return rows[0];
 }
 
@@ -39,18 +38,19 @@ async function findUserById(userID) {
     const [rows] = await pool.query(`
     SELECT * FROM users WHERE userID = ?`,
     [userID]);
-    console.log(rows);
-    return rows[0].userID;
+    return rows[0];
 }
 
+/*
 (async () => {
     try {
         const dbUsers = await getUsers();
-        //console.log(dbUsers);
+        console.log(dbUsers);
     } catch (error) {
         console.error("ERROR GETTING USERS", error);
     }
 })();
+*/
 
 
 module.exports = {

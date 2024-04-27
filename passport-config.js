@@ -6,7 +6,6 @@ async function initialize(passport, getUserByEmail, getUserById) {
     const authenticateUser = async (email, password, done) => {
         try {
             const user = await findUserByEmail(email);
-            console.log(user);
             if (!user) {
                 return done(null, false, {message: 'No user with that email'});
             }
@@ -22,8 +21,13 @@ async function initialize(passport, getUserByEmail, getUserById) {
     }
     passport.use(new LocalStrategy({usernameField:'email'}, authenticateUser))
     passport.serializeUser((user, done) => done(null, user.userID))
-    passport.deserializeUser((id, done) => {
-        done(null, findUserById(id))
+    passport.deserializeUser(async (id, done) => {
+        try {
+            const user = await findUserById(id);
+            done(null, user);
+        } catch (error) {
+            done(error);
+        }
     })
 }
 

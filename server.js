@@ -42,7 +42,7 @@ app.use(methodOverride('_method'));
 
 app.get('/', (req, res) => {
     console.log("Request recieved");
-    res.render('index.ejs');
+    res.render('index.ejs', { loggedIn: req.isAuthenticated() });
 })
 
 app.get('/login', checkNotAuthenticated, (req, res) => {
@@ -54,25 +54,33 @@ app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
     failureFlash: true
 }), (req, res) => {
     console.log("Logged in");
-    if (req.user.role === 'admin') {
-        res.redirect('/admin_dashboard');
-    } else if (req.user.role === 'customer') {
-        res.redirect('/customer_dashboard');
-    } else {
-        res.redirect('/');
-    }
+    res.redirect('/dashboard');
 })
 
 app.get('/register', checkNotAuthenticated, (req, res) => {
     res.render('register.ejs');
 })
 
-app.get('/admin_dashboard', checkAdmin, (req, res) => {
+app.get('/dashboard', checkAuthenticated, (req, res) => {
+    if (req.isAuthenticated()) {
+        const isAdmin = req.user.isAdmin;
+
+        if (isAdmin) {
+            res.render('dashAdmin.ejs');
+        } else {
+            res.render('dashCustomer.ejs', {name: req.user.firstName});
+        }
+    } else {
+        res.redirect('/login');
+    }
+})
+
+app.get('/admin_dashboard', checkAuthenticated, (req, res) => {
     res.render('dashAdmin.ejs');
 })
 
-app.get('/customer_dashboard', checkCustomer, (req, res) => {
-    res.render('dashCustomer.ejs', {name: req.user.name});
+app.get('/customer_dashboard', checkAuthenticated, (req, res) => {
+    res.render('dashCustomer.ejs', {name: req.user.firstName});
 })
 
 
@@ -105,18 +113,18 @@ app.delete('/logout', (req, res, next) => {
     });
   });
 
-function checkCustomer(req, res, next) {
+function checkAdmin(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
     }
     res.redirect('/');
 }
 
-function checkAdmin(req, res, next) {
+function checkAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
     }
-    res.redirect('/');
+    res.redirect('/login');
 }
 
 function checkNotAuthenticated(req, res, next) {
@@ -127,14 +135,3 @@ function checkNotAuthenticated(req, res, next) {
 }
 
 app.listen(port, hostname);
-
-//const server = http.createServer((req, res) => {
-//    console.log("Request Received");
-//    res.statusCode = 200;
-//    res.setHeader('Content-Type', 'text/plain');
-//    res.end("HELLO WORLD\n");
-//});
-//
-//app.listen(port, hostname, () => {
-//console.log(`Server running at http://${hostname}:${port}/`);
-//});
