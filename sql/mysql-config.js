@@ -13,17 +13,16 @@ async function getUsers() {
     return rows;
 }
 
-async function insertUser(username, password, email, firstName, lastName, uId) {
+async function insertUser(username, password, email, firstName, lastName) {
     const [rows] = await pool.query(`
     INSERT INTO users (
     username, 
     password, 
     email, 
     firstName, 
-    lastName,
-    uId) 
-    VALUES (?, ?, ?, ?, ?, ?)`,
-    [username, password, email, firstName, lastName, uId]);
+    lastName) 
+    VALUES (?, ?, ?, ?, ?)`,
+    [username, password, email, firstName, lastName]);
     return rows.insertId;
 }
 
